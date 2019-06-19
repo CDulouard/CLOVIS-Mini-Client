@@ -1,5 +1,6 @@
 import json
 
+
 class Point:
 
     def __init__(self, angle: float, distance: float):

@@ -37,7 +37,6 @@ class UDPClient:
             self.socket: socket.socket = socket.socket(socket.AF_INET,  # Internet
                                                        socket.SOCK_DGRAM)  # UDP
             self.hash_pass = hash_pass
-            # A MODIFIER
 
             self.client_is_connected: bool = False
             self.client_ip: str = ip_server
@@ -48,23 +47,32 @@ class UDPClient:
                                              socket.SOCK_DGRAM)
 
         def listen(self) -> None:
+            """
+            Infinite loop for the server
+            :return:
+            None
+            """
             self.socket.bind((self.ip, self.port))
             while self.is_running:
-                self.test_connection()
+                self.connection()  # wait for connection
+
+                """
+                Start Listening 
+                """
                 data, addr = self.socket.recvfrom(2048)  # buffer size is 1024 bytes
 
                 # DEBUG A ENLEVER PLUS TARD
                 data_string = data.decode("utf-8")
-                try:
-                    message = Message.create_json(data_string)
-                except ValueError:
-                    print("Validation KO")
-                    message = Message(0, "")
-                if message.verif():
-                    print("received message:", message.message)
 
-        def test_connection(self):
-            while self.client_is_connected == False:
+                last_message = Message.check_message(data_string)
+
+        def connection(self):
+            """
+            Send connexion request while it receive no CONNECTED answer
+            :return:
+            None
+            """
+            while not self.client_is_connected:
                 self.send('{"port" : 50054, "pass" : "' + self.hash_pass + '"}', 1)
                 data, addr = self.socket.recvfrom(2048)  # buffer size is 1024 bytes
 
@@ -84,12 +92,29 @@ class UDPClient:
                             print("Rebellotte")
 
         def run(self) -> None:
+            """
+            Start the listener
+            :return:
+            """
             self.is_running = True
             self.listen()
 
         def stop(self) -> None:
+            """
+            Stop the listener
+            :return:
+            """
             self.is_running = False
 
         def send(self, message: str, message_id: Optional[int] = 0):
+            """
+            Send a message to the client
+            :param message:
+            The string to send
+            :param message_id:
+            The id of the message (default = 0)
+            :return:
+            None
+            """
             datas_to_send = Message(message_id, message)
             self.socket.sendto(bytes(str(datas_to_send), 'utf-8'), (self.client_ip, self.client_port))

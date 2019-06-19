@@ -3,7 +3,7 @@ import time
 
 bool = True
 
-server = UDPClient("127.0.0.1", 50057, "127.0.0.1", 50055, "test")
+server = UDPClient("192.168.43.184", 50057, "192.168.43.154", 50055, "test")
 server.start()
 # i = 0
 # while i < 100:
