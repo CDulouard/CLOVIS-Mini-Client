@@ -27,6 +27,9 @@ class UDPClient:
 
         self.listener.send(message, message_id)
 
+    def check_connection(self):
+        return self.listener.client_is_connected
+
     class Listener(Thread):
 
         def __init__(self, ip: str, port: int, ip_server: str, port_server, hash_pass: str) -> None:
