@@ -8,8 +8,21 @@ import hashlib
 
 class UDPClient:
 
-    def __init__(self, ip_local: str, port: int, ip_server: str, port_server, password: Optional[str] = "") -> None:
-        self.ip_local: str = ip_local
+    def __init__(self, ip: str, port: int, ip_server: str, port_server, password: Optional[str] = "") -> None:
+        """
+        Creat a new UDPClient object
+        :param ip:
+        The ip we want to use for the client
+        :param port:
+        The port we want to use for the client
+        :param ip_server:
+        The ip we want to connect on
+        :param port_server:
+        The port of the server
+        :param password:
+        The password of the server
+        """
+        self.ip_local: str = ip
         self.port: int = port
         self.ip_server: str = ip_server
         self.port_server = port_server
@@ -17,14 +30,31 @@ class UDPClient:
         self.listener = self.Listener(self.ip_local, self.port, ip_server, port_server, self.hash_pass)
 
     def start(self) -> None:
+        """
+        Start the client
+        :return:
+        None
+        """
         self.listener.start()
 
     def stop(self) -> None:
+        """
+        Stop the client
+        :return:
+        None
+        """
         self.listener.stop()
 
     def send(self, message: str, message_id: Optional[int] = 0):
-        # if message_id == 1:
-
+        """
+        Send a message to the server
+        :param message:
+        The string to send
+        :param message_id:
+        The id of the message (default = 0)
+        :return:
+        None
+        """
         self.listener.send(message, message_id)
 
     def check_connection(self):
@@ -33,6 +63,19 @@ class UDPClient:
     class Listener(Thread):
 
         def __init__(self, ip: str, port: int, ip_server: str, port_server, hash_pass: str) -> None:
+            """
+            Creat a new Listener object
+            :param ip:
+            The ip we want to use for the client
+            :param port:
+            The port we want to use for the client
+            :param ip_server:
+            The ip we want to connect on
+            :param port_server:
+            The port of the server
+            :param hash_pass:
+            The hashed password of the server
+            """
             Thread.__init__(self)
             self.is_running: bool = False
             self.ip: str = ip
@@ -82,7 +125,7 @@ class UDPClient:
                 # DEBUG A ENLEVER PLUS TARD
                 data_string = data.decode("utf-8")
                 try:
-                    message = Message.create_json(data_string)
+                    message = Message.create_from_json(data_string)
                 except ValueError:
                     print("Validation KO")
                     message = Message(0, "")
@@ -98,6 +141,7 @@ class UDPClient:
             """
             Start the listener
             :return:
+            None
             """
             self.is_running = True
             self.listen()
@@ -106,12 +150,13 @@ class UDPClient:
             """
             Stop the listener
             :return:
+            None
             """
             self.is_running = False
 
         def send(self, message: str, message_id: Optional[int] = 0):
             """
-            Send a message to the client
+            Send a message to the server
             :param message:
             The string to send
             :param message_id:
@@ -119,5 +164,5 @@ class UDPClient:
             :return:
             None
             """
-            datas_to_send = Message(message_id, message)
-            self.socket.sendto(bytes(str(datas_to_send), 'utf-8'), (self.client_ip, self.client_port))
+            data_to_send = Message(message_id, message)
+            self.socket.sendto(bytes(str(data_to_send), 'utf-8'), (self.client_ip, self.client_port))
