@@ -4,6 +4,7 @@ from threading import Thread
 from typing import Optional
 from Message import *
 import hashlib
+from DataLogger import *
 
 
 class UDPClient:
@@ -107,7 +108,6 @@ class UDPClient:
                 """
                 data, addr = self.socket.recvfrom(2048)  # buffer size is 1024 bytes
 
-                # DEBUG A ENLEVER PLUS TARD
                 data_string = data.decode("utf-8")
 
                 last_message = Message.check_message(data_string)
