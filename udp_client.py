@@ -122,7 +122,6 @@ class UDPClient:
                 self.send('{"port" : 50054, "pass" : "' + self.hash_pass + '"}', 1)
                 data, addr = self.socket.recvfrom(2048)  # buffer size is 1024 bytes
 
-                # DEBUG A ENLEVER PLUS TARD
                 data_string = data.decode("utf-8")
                 try:
                     message = Message.create_from_json(data_string)
