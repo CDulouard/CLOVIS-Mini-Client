@@ -39,6 +39,7 @@ class DataLogger(Thread):
         self.delay_save = delay_save
         self.is_running = False
         self.date = datetime.datetime.now()
+        self.start()
 
     def __repr__(self):
         return "{}".format(self.stack)
