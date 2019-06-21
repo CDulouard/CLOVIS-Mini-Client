@@ -26,6 +26,8 @@ class DataLogger(Thread):
         :param file_size:
         The max size of the save file, if the length of the stack + the length of the file is greater than this number,
         the DataLogger will creat a new file.
+        :param delay_heart_beat:
+        The delay max between two heart beat.
         """
         Thread.__init__(self)
         self.stack = pd.DataFrame(columns=columns)
