@@ -4,7 +4,7 @@ from threading import Thread
 from typing import Optional
 from Message import *
 import hashlib
-from DataLogger import *
+from DataLogger import DataLogger
 
 
 class UDPClient:

@@ -11,7 +11,7 @@ class DataLogger(Thread):
     def __init__(self, stack_size: Optional[int] = 1000, columns: Optional[List[str]] = [],
                  file_identifier: Optional[str] = "Log",
                  path: Optional[str] = "Logs/", file_size: Optional[int] = 100_000,
-                 delay_save: Optional[int] = 60) -> None:
+                 delay_save: Optional[int] = 60, delay_heart_beat: Optional[int] = 60) -> None:
         """
         Creat a new DataLogger
         :param stack_size:
@@ -39,6 +39,8 @@ class DataLogger(Thread):
         self.delay_save = delay_save
         self.is_running = False
         self.date = datetime.datetime.now()
+        self.delay_heart_beat = delay_heart_beat
+        self.last_heart_beat = time.time()
         self.start()
 
     def __repr__(self):
@@ -101,10 +103,15 @@ class DataLogger(Thread):
         :return:
         None
         """
-        while self.is_running:
-            if time.time() - self.last_save >= self.delay_save:
-                self.save_stack()
-            time.sleep(0.1)
+        if time.time() - self.last_save >= self.delay_save:
+            self.save_stack()
+
+    def check_heart_beat(self):
+        if time.time() - self.last_heart_beat >= self.delay_heart_beat:
+            self.stop()
+
+    def heart_beat(self):
+        self.last_heart_beat = time.time()
 
     def run(self) -> None:
         """
@@ -114,7 +121,10 @@ class DataLogger(Thread):
         None
         """
         self.is_running = True
-        self.periodic_save()
+        while self.is_running:
+            self.periodic_save()
+            self.check_heart_beat()
+            time.sleep(0.1)
 
     def stop(self) -> None:
         """
